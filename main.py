@@ -8,8 +8,9 @@ def get_birthdays_per_week(users):
 
     # If today is Sunday or Monday next weekend's birthday persons
     # should be congratulated next Monday but not this one
-    sat2mon = "Monday" if date.today().weekday() not in (0, 6) else "Next Monday"
-    sun2mon = "Monday" if date.today().weekday() != 0 else "Next Monday"
+    weekday = date.today().weekday()
+    sat2mon = "Monday" if weekday not in (0, 6) else "Next Monday"
+    sun2mon = "Monday" if weekday != 0 else "Next Monday"
 
     output = defaultdict(list)
 
@@ -17,8 +18,13 @@ def get_birthdays_per_week(users):
         user_date = user["birthday"].strftime("%m.%d")
         for day in days_range:
             day_str = day.strftime("%m.%d")
-            if day_str == user_date or (user_date == "02.29" and day_str == "03.01"):  # who were born on February 29 celebrate March 1
-                output[day.strftime("%A").replace("Saturday", sat2mon).replace("Sunday", sun2mon)].append(user["name"])
+            # Who were born on February 29 celebrate March 1
+            if day_str == user_date or \
+                    (user_date == "02.29" and day_str == "03.01"):
+                weekday = day.strftime("%A")
+                weekday = weekday.replace("Saturday", sat2mon)
+                weekday = weekday.replace("Sunday", sun2mon)
+                output[weekday].append(user["name"])
                 break
 
     return output
